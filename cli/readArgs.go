@@ -10,7 +10,8 @@ func help() {
 	fmt.Println("Options:")
 	fmt.Println("  -h, --help		Display this help message")
 	fmt.Println("  -v, --version	Display the version number")
-	fmt.Println("  --clone		Repository name url")
+	fmt.Println("  --debug          Enable Debug mode")
+	fmt.Println("  init <path>      Initialize docs for the repository")
 }
 
 func splitArgs(args []string) (map[string]string, error) {
@@ -23,6 +24,8 @@ func splitArgs(args []string) (map[string]string, error) {
 			return nil, nil
 		case "-v", "--version":
 			return nil, nil
+		case "--debug":
+			argsMap["debug"] = "true"
 		case "init":
 			if i+1 >= len(args) {
 				return nil, fmt.Errorf("missing value for init")
