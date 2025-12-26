@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/rakesh7r/ai-doc-generator/cli"
+	"github.com/rakesh7r/ai-doc-generator/filereader"
 	"github.com/rakesh7r/ai-doc-generator/logger"
 )
 
@@ -19,6 +20,11 @@ func main() {
 		slog.Debug("Debug logs enabled")
 	}
 
-	cli.Init(args)
+	docsDir, err := cli.Init(args)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
 
+	filereader.ReadDirectory(docsDir)
 }

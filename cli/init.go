@@ -30,30 +30,30 @@ func isDocsInitialized(docsDir string) (bool, error) {
 	return true, nil
 }
 
-func initializeDocs(args map[string]string) error {
+func initializeDocs(args map[string]string) (string, error) {
 	resolved, err := filepath.Abs(args["path"])
 	if err != nil {
 		slog.Error("Failed to resolve path", "error", err)
 		panic(err)
 	}
 
-	gitDir, err := getRootDir(resolved)
+	rootDir, err := getRootDir(resolved)
 	if err != nil {
 		slog.Error("Failed to get root directory", "error", err)
-		return err
+		return "", err
 	}
 
-	gitDir = strings.TrimSpace(gitDir)
-	docsDir := filepath.Join(gitDir, ".docs")
+	rootDir = strings.TrimSpace(rootDir)
+	docsDir := filepath.Join(rootDir, ".docs")
 
 	isInitialized, err := isDocsInitialized(docsDir)
 	if err != nil {
 		slog.Error("Failed to check if docs are initialized", "error", err)
-		return err
+		return "", err
 	}
 	if isInitialized {
 		slog.Info("Docs are already initialized at", "path", docsDir)
-		return nil
+		return rootDir, nil
 	}
 
 	err = os.MkdirAll(docsDir, 0o755)
@@ -61,9 +61,9 @@ func initializeDocs(args map[string]string) error {
 		slog.Error("Failed to create docs directory", "error", err)
 		panic(err)
 	}
-	return nil
+	return rootDir, nil
 }
 
-func Init(args map[string]string) error {
+func Init(args map[string]string) (string, error) {
 	return initializeDocs(args)
 }
