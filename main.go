@@ -20,11 +20,12 @@ func main() {
 		slog.Debug("Debug logs enabled")
 	}
 
-	docsDir, err := cli.Init(args)
+	rootDir, err := cli.Init(args)
 	if err != nil {
 		slog.Error(err.Error())
 		return
 	}
 
-	filereader.ReadDirectory(docsDir)
+	filereader.ReadDirectory(rootDir)
+
 }

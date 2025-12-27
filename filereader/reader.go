@@ -26,8 +26,8 @@ func findGitIgnoreFiles(path string) ([]string, error) {
 	return gitIgnoreFiles, nil
 }
 
-func readGitIgnoreFiles(path string) []string {
-	ignore := []string{}
+func readGitIgnoreFiles(path string) map[string]bool {
+	ignore := make(map[string]bool)
 	file, err := filepath.Abs(filepath.Join(path, ".gitignore"))
 	if err != nil {
 		log.Fatal(err)
@@ -39,19 +39,23 @@ func readGitIgnoreFiles(path string) []string {
 	lines := string(data)
 	for _, line := range filepath.SplitList(lines) {
 		patterns := strings.Split(line, "\n")
-		ignore = append(ignore, patterns...)
+		for _, pattern := range patterns {
+			ignore[pattern] = true
+		}
 	}
-	ignore = append(ignore, ".git")
+	ignore[".git"] = true
 	return ignore
 }
 
 func ReadDirectory(basePath string) ([]string, error) {
 	gitIgnorePaths, _ := findGitIgnoreFiles(basePath)
-	ignorePatterns := []string{}
+	ignorePatterns := make(map[string]bool)
 
 	for _, gitIgnorePath := range gitIgnorePaths {
 		patterns := readGitIgnoreFiles(filepath.Dir(gitIgnorePath))
-		ignorePatterns = append(ignorePatterns, patterns...)
+		for k, v := range patterns {
+			ignorePatterns[k] = v
+		}
 	}
 
 	files := []string{}
@@ -61,7 +65,7 @@ func ReadDirectory(basePath string) ([]string, error) {
 			return err // Propagate errors
 		}
 		if d.IsDir() {
-			for _, pattern := range ignorePatterns {
+			for pattern := range ignorePatterns {
 				matched, err := filepath.Match(pattern, d.Name())
 				if err != nil {
 					return err
@@ -72,7 +76,7 @@ func ReadDirectory(basePath string) ([]string, error) {
 			}
 		} else {
 			// It's a file
-			for _, pattern := range ignorePatterns {
+			for pattern := range ignorePatterns {
 				matched, err := filepath.Match(pattern, d.Name())
 				if err != nil {
 					return err

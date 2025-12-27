@@ -1,0 +1,18 @@
+services:
+  ollama:
+    image: alpine/ollama:latest
+    container_name: ollama
+    volumes:
+      - ollama-data:/data
+    ports:
+      - "11434:11434"
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "ollama serve &
+       sleep 3 &&
+       ollama run deepseek-coder:1.3b &&
+       wait"
+    restart: unless-stopped
+
+volumes:
+  ollama-data: {}
