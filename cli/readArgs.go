@@ -11,6 +11,7 @@ func help() {
 	fmt.Println("  -h, --help		Display this help message")
 	fmt.Println("  -v, --version	Display the version number")
 	fmt.Println("  --debug          Enable Debug mode")
+	fmt.Println("  --lang <lang>    Specify the programming language (e.g., only js is supported for now)")
 	fmt.Println("  init <path>      Initialize docs for the repository")
 }
 
@@ -26,6 +27,12 @@ func splitArgs(args []string) (map[string]string, error) {
 			return nil, nil
 		case "--debug":
 			argsMap["debug"] = "true"
+		case "--lang":
+			if i+1 >= len(args) {
+				return nil, fmt.Errorf("missing value for lang")
+			}
+			argsMap["lang"] = args[i+1]
+			i++
 		case "init":
 			if i+1 >= len(args) {
 				return nil, fmt.Errorf("missing value for init")

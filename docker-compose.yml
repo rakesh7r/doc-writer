@@ -3,7 +3,7 @@ services:
     image: alpine/ollama:latest
     container_name: ollama
     volumes:
-      - ollama-data:/data
+      - ollama:/root/.ollama
     ports:
       - "11434:11434"
     entrypoint: ["/bin/sh", "-c"]
@@ -15,4 +15,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  ollama-data: {}
+  ollama:

@@ -5,6 +5,7 @@ import (
 
 	"github.com/rakesh7r/ai-doc-generator/cli"
 	"github.com/rakesh7r/ai-doc-generator/filereader"
+	js "github.com/rakesh7r/ai-doc-generator/js/classify"
 	"github.com/rakesh7r/ai-doc-generator/logger"
 )
 
@@ -26,6 +27,18 @@ func main() {
 		return
 	}
 
-	filereader.ReadDirectory(rootDir)
+	files, err := filereader.ReadDirectory(rootDir)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
 
+	switch args["lang"] {
+	case "js":
+		js.Scrape(rootDir, files)
+		slog.Debug("Config content read successfully")
+	default:
+		slog.Error("Unsupported language. Only 'js' is supported for now.")
+		return
+	}
 }
